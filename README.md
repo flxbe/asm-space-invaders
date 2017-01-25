@@ -5,6 +5,8 @@ This is a very simple clone of the popular arcade game Space Invaders.
 The game is written in x86-assembly. The resulting program includes a bootloader and the game itself.
 It leverages the existing BIOS functionality to receive keyboard input and print ASCII chars to the screen.
 
+![Screenshot](https://raw.githubusercontent.com/flxbe/asm-space-invaders/master/screenshot.png)
+
 #### Building the Project
 In order to assemble the source of the project you have to install [NASM](http://www.nasm.us/).
 You can than start the building process by executing
