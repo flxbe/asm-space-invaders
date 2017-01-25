@@ -1,11 +1,7 @@
-; initialize the environment
-mov ax, 0x07c0
-mov ds, ax      ; set the DS to the start of the programm
-                ; this has to be indirectly, since all segement-registers can not directly be written to.
-
+; clear the cursor blinking
 mov	ah, 0x01
 mov	cx, 0x2000
-int 	0x10  ; clear the cursor blinking
+int 	0x10
 
 ; calculate game screen position
 mov	ah, 0x0F
@@ -17,7 +13,6 @@ mov [displayOffset], ah
 
 ; initialize the bullet list by setting  the end-pointer to the list-start
 mov word [bulletListEnd], bulletListStart
-
 
 ; game logic
 gameLoop:
@@ -324,6 +319,5 @@ bulletListStart db 0x00
 
 
 ; ################################################
-; spacing and signature
-times 510 - ($ - $$) db 0
-dw 0xaa55
+; spacing
+times 1014 - ($ - $$) db 0
