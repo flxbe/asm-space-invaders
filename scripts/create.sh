@@ -1,3 +1,4 @@
+mkdir -p build
 nasm bootloader.asm -f bin -o build/bootloader.bin
 nasm space-invaders.asm -f bin -o build/space-invaders.bin
 
