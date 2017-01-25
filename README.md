@@ -9,7 +9,7 @@ It leverages the existing BIOS functionality to receive keyboard input and print
 
 #### Building the Project
 In order to assemble the source of the project you have to install [NASM](http://www.nasm.us/).
-You can than start the building process by executing
+You can then start the building process by executing
 
 ```bash
 ./scripts/create.sh
@@ -26,3 +26,6 @@ After the emulator is installed and the image is created, you can start the prog
 ```bash
 ./scripts/start.sh
 ```
+
+#### Additional Notes
+A big thank you to Peter Mikkelsen and his [ASM Snake Project](https://gitlab.com/pmikkelsen/asm_snake).
