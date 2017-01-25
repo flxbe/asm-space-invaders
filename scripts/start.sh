@@ -1,1 +1,1 @@
-qemu-system-x86_64 -fda build/image.bin
+qemu-system-x86_64 -fda build/image.img
