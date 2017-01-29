@@ -15,7 +15,7 @@ You can then start the building process by executing
 ./scripts/create.sh
 ```
 
-You should now find the file `build/image.img`.
+You should create the file `build/image.img`.
 
 #### Execution
 As far as I know, the programm *should* be bootable from a floppy disk. I did not test this, though.
@@ -28,4 +28,4 @@ After the emulator is installed and the image is created, you can start the prog
 ```
 
 #### Additional Notes
-A big thank you to Peter Mikkelsen and his [ASM Snake Project](https://gitlab.com/pmikkelsen/asm_snake).
+A big Thank You to Peter Mikkelsen and his [ASM Snake Project](https://gitlab.com/pmikkelsen/asm_snake).

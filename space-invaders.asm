@@ -18,38 +18,25 @@ mov word [bulletListEnd], bulletListStart
 gameLoop:
   call clearScreen
 
+deleteBullets:
+  cmp byte [bulletMoveCycle], 0x18
+  jne deleteBuleltsFinish
+  mov dx, deleteBulletsLoopFunction
+  call cycleThroughBullets
+deleteBuleltsFinish:
+
+
 moveBullets:
   cmp byte [bulletMoveCycle], 0x18
-  jge moveBulletsPrepareLoop   ; move-cycle -> move all bullets
+  jge moveBulletsStart   ; move-cycle -> move all bullets
   inc byte [bulletMoveCycle]
-  jmp moveBulletsFinishLoop ; no move-cycle -> jump to end of loop
-moveBulletsPrepareLoop:
+  jmp moveBulletsFinish ; no move-cycle -> jump to end of loop
+moveBulletsStart:
   mov byte [bulletMoveCycle], 0x00 ; reset the cycle counter
-  mov si, bulletListStart
-moveBulletsStartLoop:
-  mov cl, [si] ; load STATUS
-  cmp cl, 0
-  je moveBulletsFinishLoop
-  inc si
-  mov dx, [si] ; load POSITION
-  cmp cl, 2
-  je movePlayerBullet
-  cmp cl, 3
-  je moveInvaderBullet
-  jmp moveBulletContinueLoop
-movePlayerBullet:
-  mov al, 0
-  jmp moveBullet
-moveInvaderBullet:
-  mov al, 2
-moveBullet:
-  call move
-  mov [si], dx
-moveBulletContinueLoop:
-  inc si
-  inc si
-  jmp moveBulletsStartLoop
-moveBulletsFinishLoop:
+  mov dx, moveBulletLoopFunction
+  call cycleThroughBullets
+moveBulletsFinish:
+
 
 movePlayer:
   mov dx, [playerPos]  ; copy the player position into BX
@@ -92,12 +79,31 @@ moveInvadersStartLoop:
   mov si, invaders
   mov cl, [numInvaders]
 moveInvadersLoop:
-  ; update position
+  ; load position
   mov dx, [si]
+
+  ; skip invader, if destroyed
+  cmp dx, 0x0000
+  je moveInvadersContinueLoop
+
+  ; move invader
   mov al, [moveDirection]
   call move
-  mov [si], dx
+
   ; check collisions
+  push si
+  push cx
+  mov ax, dx
+  mov dx, checkCollisionLoopFunction
+  call cycleThroughBullets
+  pop cx
+  pop si
+
+  mov dx, ax  ; save new position
+  mov [si], dx
+
+  cmp dx, 0x0000
+  je moveInvadersContinueLoop
 
   ; shoot, if necessary
   cmp byte [invaderShootCycle], 0x04
@@ -128,8 +134,6 @@ resetMoveDirection:
 saveMoveDirection:
   mov [moveDirection], al
   
-
-
 printGame:
   ; print arena
   mov al, '#'
@@ -144,6 +148,10 @@ printArenaLoop:
   dec cl
   jnz printArenaLoop
 
+  ;print bullets
+  mov dx, renderBulletLoopFunction
+  call cycleThroughBullets
+
   ; print player
   mov al, 'M'
   mov dx, [playerPos]
@@ -155,33 +163,14 @@ printArenaLoop:
   mov cl, [numInvaders]
 printInvadersLoop:
   mov dx, [si]
+  cmp dx, 0x0000
+  je printInvadersLoopContinue
   call print
+printInvadersLoopContinue:
   inc si
   inc si
   dec cl
   jnz printInvadersLoop
-
-  ;print bullets
-  mov si, bulletListStart
-printBulletsStartLoop:
-  mov cl, [si] ; load STATUS
-  cmp cl, 0
-  je printBulletsFinishLoop
-  inc si
-  mov dx, [si] ; load POSITION
-  cmp cl, 1
-  je setExplosionChar
-setBulletChar:
-  mov al, '|'
-  jmp printBullet
-setExplosionChar:
-  mov al, '#'
-printBullet:
-  call print
-  inc si
-  inc si
-  jmp printBulletsStartLoop
-printBulletsFinishLoop:
 
 finishLoop:
   mov	cx, 0x0000	; Sleep for 0,05 seconds (cx:dx)
@@ -189,6 +178,7 @@ finishLoop:
 	mov	ah, 0x86
 	int	0x15		; Sleep
 	jmp	gameLoop	; loop
+
 
 ; DX position to move
 ; AL direction
@@ -201,22 +191,22 @@ move:
   je moveLeft
 moveUp:
   cmp dh, 0
-  jle done
+  jle moveDone
   sub	word dx, 0x0100
 	jmp moveDone
 moveDown:
   cmp dh, 24
-  jge done
+  jge moveDone
   add	word dx, 0x0100
 	jmp moveDone
 moveLeft:
   cmp dl, 1
-  jle done
+  jle moveDone
   sub	word dx, 0x0001
 	jmp moveDone
 moveRight:
   cmp dl, [moveWidth]
-  jge done
+  jge moveDone
   add	word dx, 0x0001
 moveDone:
   ret
@@ -244,6 +234,121 @@ createBulletFinish:
   inc di
   mov byte [di], 0x00 ; set the end of the list
   mov [bulletListEnd], di ; save the list end
+  ret
+
+; delete the bullet at SI
+removeBullet:
+  push ax
+  push si
+removeBulletStartLoop:
+  cmp si, [bulletListEnd]
+  je removeBulletFinish
+
+  mov al, [si+3]  ; copy the status
+  mov [si], al
+  inc si
+  mov ax, [si+3]  ; copy the position
+  mov [si], ax
+  add si, 2             ; set SI to the next bullet
+  jmp removeBulletStartLoop
+removeBulletFinish:
+  sub word [bulletListEnd], 3 ; adjust end of list
+  pop si
+  pop ax
+  ret
+
+; delete bullets that are out of the frame or explosions
+; CL status
+; BX position
+deleteBulletsLoopFunction:
+  cmp cl, 1
+  je deleteBulletLoopRemove
+  cmp bh, 0
+  je deleteBulletLoopRemove
+  cmp bh, 24
+  je deleteBulletLoopRemove
+  jmp deleteBulletLoopFinish
+deleteBulletLoopRemove:
+  call removeBullet ; remove the bullet
+  sub si, 3         ; reset loop to former bullet -> next loop is the next
+deleteBulletLoopFinish:
+  ret
+
+
+
+; move a single bullet
+; CL status
+; BX position
+moveBulletLoopFunction:
+  cmp cl, 2
+  je movePlayerBullet
+  cmp cl, 3
+  je moveInvaderBullet
+  ret
+movePlayerBullet:
+  mov al, 0
+  jmp moveBullet
+moveInvaderBullet:
+  mov al, 2
+moveBullet:
+  push dx
+  mov dx, bx
+  call move
+  mov [si+1], dx
+  pop dx
+  ret
+
+; render bullet
+; CL status
+; BX position
+renderBulletLoopFunction:
+  push dx
+  mov dx, bx
+  cmp cl, 1
+  je setExplosionChar
+setBulletChar:
+  mov al, '|'
+  jmp printBullet
+setExplosionChar:
+  mov al, '#'
+printBullet:
+  call print
+  pop dx
+  ret
+
+
+; check for collisions
+; AX object position
+; BX bullet position
+checkCollisionLoopFunction:
+  cmp ax, bx
+  jne checkCollisionDone
+  mov ax, 0x0000  ; delete object
+  mov byte [si], 1 ; set bullet status to explosion
+checkCollisionDone:
+  ret
+
+
+; cycle through bullets
+; DX address of the loop functions
+; calls the function in DX with:
+; CL status of the current bullet
+; BX postition of the current bullet
+cycleThroughBullets:
+  push si
+  push cx
+  mov si, bulletListStart
+cycleThroughBulletsLoopStart:
+  mov cl, [si] ; load STATUS
+  cmp cl, 0
+  je moveBulletsFinishLoop
+  mov bx, [si + 1] ; load POSITION
+  call dx
+  add si, 3
+  jmp cycleThroughBulletsLoopStart
+moveBulletsFinishLoop:
+  pop cx
+  pop si
   ret
 
 
