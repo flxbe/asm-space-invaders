@@ -103,6 +103,17 @@ game:
   call render_bullets
   call render_player
   call render_invaders
+
+  ; render controlls
+  mov dx, 0x0000
+  mov si, left_string
+  call print_string
+  inc dh
+  mov si, right_string
+  call print_string
+  inc dh
+  mov si, shoot_string
+  call print_string
 .continue:
   mov cx, 0x0000  ; 0.05 seconds (cx:dx)
   mov	dx, 0x1388  ; 0x00001388 = 5000
@@ -150,6 +161,11 @@ intro_string_o db "#   SPACE to start   #", 0
 end_string_w db "#    PLAYER  wins    #", 0
 end_string_l db "#    INVADERS win    #", 0
 end_string_o db "#  SPACE to restart  #", 0
+
+; controls
+left_string db "A = move left", 0
+right_string db "D = move right", 0
+shoot_string db "SPACE = shoot", 0
 
 
 ; program state

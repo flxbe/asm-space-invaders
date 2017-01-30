@@ -6,7 +6,7 @@ The game is written in x86-assembly. The resulting program includes a bootloader
 It leverages the existing BIOS functionality to receive keyboard input and print ASCII chars to the screen.
 
 ![Screenshot](https://cloud.githubusercontent.com/assets/9663231/22428356/03a23148-e707-11e6-9909-6ec9db57325a.png)
-![Screenshot](https://cloud.githubusercontent.com/assets/9663231/22428352/01d220c6-e707-11e6-90e4-39fbe8473542.png)
+![Screenshot](https://cloud.githubusercontent.com/assets/9663231/22428754/85eb2488-e708-11e6-8377-adb2d4827a90.png)
 ![Screenshot](https://cloud.githubusercontent.com/assets/9663231/22428350/0041ae16-e707-11e6-9845-aa35266ca5c3.png)
 
 #### Building the Project
@@ -17,7 +17,7 @@ You can then start the building process by executing
 ./scripts/create.sh
 ```
 
-You should create the file `build/image.img`.
+This should create the file `build/image.img`.
 
 #### Execution
 As far as I know the programm *should* be bootable from a floppy disk. I did not test this, though.
@@ -34,11 +34,12 @@ The bootloader is located in `bootloader.asm`. It's single purpose is to load th
 and then jump to it's entrypoint.
 
 The main file of the game is `space-invaders.asm`. It uses the NASM pre-processor to `%include` the additional
-source files from `/src`. These include specific code for different parts of the game (e.g. the bullets, the invaders, ...).
+source files from `/src`.
 
 All variables are still located in `space-invaders.asm`. Notice, that the pre-processor just replaces the `%include` statement with
-the included file's content. Therefore, the assembler just interprets one continuous file. This does not require any
+the included file's content. Therefore the assembler just interprets one continuous file. This does not require any
 additional linking.
 
 #### Additional Notes
-A big Thank You to Peter Mikkelsen and his [ASM Snake Project](https://gitlab.com/pmikkelsen/asm_snake).
+A big Thank You to Peter Mikkelsen and his [ASM Snake Project](https://gitlab.com/pmikkelsen/asm_snake) as well as to 
+[OSDev.org](http://wiki.osdev.org/Main_Page).
