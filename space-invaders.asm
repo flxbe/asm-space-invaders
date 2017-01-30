@@ -1,3 +1,7 @@
+; constants
+%define NUM_INVADERS 12
+%define GAME_WIDTH 27
+
 ; clear the cursor blinking
 mov	ah, 0x01
 mov	cx, 0x2000
@@ -7,20 +11,17 @@ int 	0x10
 mov	ah, 0x0F
 int	0x10 ; load the number of columns
 sub byte ah, 1
-sub ah, [gameWidth]
+sub ah, GAME_WIDTH
 sar ah, 1
-mov [displayOffset], ah
-
-; initialize the bullet list by setting the end-pointer to the list-start
-mov word [bulletListEnd], bulletListStart
+mov [display_offset], ah
 
 
 jmp main
 
 ; include dependencies
-
-%include "./src/print_util.asm"
-%include "./src/game_util.asm"
+%include "./src/keyboard.asm"
+%include "./src/display.asm"
+%include "./src/game.asm"
 
 %include "./src/bullets.asm"
 %include "./src/invaders.asm"
@@ -28,19 +29,69 @@ jmp main
 %include "./src/arena.asm"
 
 
+; main loop
 main:
+  mov ah, [program_state]
+  cmp ah, 1
+  je .game
+  cmp ah, 2
+  je .end
+.intro:
+  call intro
+  jmp main
+.game:
   call game
-
-  mov cx, 0x0000  ; 0.05 seconds (cx:dx)
-  mov	dx, 0x1388  ; 0x00001388 = 5000
-  call sleep
-
-  jmp	main	; loop
+  jmp main
+.end:
+  call end
+  jmp main
 
 
+; intro screen
+intro:
+  call clear_screen
+
+  mov ax, intro_string_t
+  mov bx, intro_string_o
+  call print_window
+.wait:
+  call get_key
+  mov al, [key_pressed]
+  cmp al, ' '
+  je .game
+  jmp .wait
+.game:
+  mov byte [program_state], 1
+  ret
+
+
+; game loop
 game:
-  call check_game_state
+  call init_game
+.loop:
 
+  ; check the current program state
+  cmp byte [program_state], 1
+  jne .done
+
+  ; get key if available
+  call check_key
+
+  ; check the game state
+  cmp word [player_pos], 0x0000
+  je .invaders
+  ; check whether the player wins
+  cmp byte [num_invaders_alive], 0
+  je .player
+  ; execute a game step
+  jmp .execute
+.invaders:
+  mov byte [winner], 1
+  jmp .done
+.player:
+  mov byte [winner], 0
+  jmp .done
+.execute:
   ; move
   call move_bullets
   call move_player
@@ -52,43 +103,86 @@ game:
   call render_bullets
   call render_player
   call render_invaders
-
-  mov dx, 0x0000
-  call move_cursor
-  mov si, title
-  call print_string
+.continue:
+  mov cx, 0x0000  ; 0.05 seconds (cx:dx)
+  mov	dx, 0x1388  ; 0x00001388 = 5000
+  call sleep
+  jmp	.loop
+.done:
+  mov byte [program_state], 2
   ret
 
-; variables
 
-; strings
-title db "SPACE INVADERS", 0
-
-; display
-screenWidth db 0
-gameWidth db 27
-moveWidth db 26
-displayOffset db 0
-
-; player
-playerPos dw 0x1401
-
-; invaders
-moveDirection db 1
-invaders dw 0x0102, 0x0304, 0x0106, 0x0308, 0x010A, 0x030C, 0x010E, 0x0310, 0x0112, 0x0314, 0x0116, 0x0318  ; 0xPYPX
-numInvaders db 12
-invaderMoveCycle db 0
-invaderShootCycle db 0
-
-; bullets:  0x PY PX STATUS
-; STATUS == 0: end of list
-; STATUS == #: explosion
-; STATUS == p: player bullet
-; STATUS == i: invader bullet
-bulletMoveCycle db 0
-bulletListEnd dw 0
-bulletListStart db 0x00
+; end screen
+end:
+  cmp byte [winner], 0
+  je .player
+  mov ax, end_string_l
+  jmp .continue
+.player:
+  mov ax, end_string_w
+.continue:
+  mov bx, end_string_o
+  call print_window
+.wait:
+  call get_key
+  mov al, [key_pressed]
+  cmp al, ' '
+  je .game
+  jmp .wait
+.game:
+  mov byte [program_state], 1
+  ret
 
 
-; spacing
-times 1014 - ($ - $$) db 0
+; window
+window_1 db "######################", 0
+window_2 db "#                    #", 0
+window_3 db "#                    #", 0
+window_4 db "#                    #", 0
+window_5 db "######################", 0
+
+; intro
+intro_string_t db "#   SPACE INVADERS   #", 0
+intro_string_o db "#   SPACE to start   #", 0
+
+; end
+end_string_w db "#    PLAYER  wins    #", 0
+end_string_l db "#    INVADERS win    #", 0
+end_string_o db "#  SPACE to restart  #", 0
+
+
+; program state
+; 0: start screen
+; 1: game screen
+; 2: end screen
+program_state db 0
+
+segment .bss
+  ; display properties
+  display_offset resb 1
+
+  ; keyboard
+  key_pressed resb 1
+
+  ; game
+  ; 0: player wins
+  ; 1: invaders win
+  winner resb 1
+
+  ; player
+  player_pos resw 1
+  ; invaders
+  invaders resw NUM_INVADERS
+  num_invaders_alive resb 12
+  invaders_move_direction resb 1
+  invaders_move_cycle resb 1
+  invaders_shoot_cycle resb 1
+  ; bullets:  0x PY PX STATUS
+  ; STATUS == 0: end of list
+  ; STATUS == #: explosion
+  ; STATUS == p: player bullet
+  ; STATUS == i: invader bullet
+  bulletMoveCycle resb 1
+  bulletListEnd resw 1
+  bulletListStart resb 1

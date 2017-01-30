@@ -12,7 +12,7 @@ render_arena:
 .loop:
   mov dl, 0
   call print_object
-  mov dl, [gameWidth]
+  mov dl, GAME_WIDTH
   call print_object
   inc dh
   dec cl

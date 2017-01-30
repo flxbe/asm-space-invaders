@@ -6,57 +6,69 @@ move_bullets:
   cmp byte [bulletMoveCycle], 0x18  ; only move the bullets every 24 frames
   je .move
   inc byte [bulletMoveCycle]  ; increase the counter
-  jmp .done
+  jmp .ret
 .move:
+  push di
+
   mov byte [bulletMoveCycle], 0x00  ; reset the counter
 
   ; delete bullets that are exploded or out of the screen
-  mov dx, _check_and_delete_bullet
+  mov di, _check_and_delete_bullet
   call _iterate_bullets
 
   ; move all bullets
-  mov dx, _move_bullet
+  mov di, _move_bullet
   call _iterate_bullets
-.done:
+
+  pop di
+.ret:
   ret
 
 ; move a single bullet
-; CL status
-; BX position
+; SI bullet pointer
 _move_bullet:
-  cmp cl, 'p'
+  push ax
+  push dx
+  mov al, [si]      ; load status
+  mov dx, [si + 1]  ; load position
+  cmp al, 'p'
   je .player
-  cmp cl, 'i'
+  cmp al, 'i'
   je .invader
-  ret
+  jmp .done
 .player:
   mov al, 0
   jmp .move
 .invader:
   mov al, 2
 .move:
-  push dx
-  mov dx, bx
   call move
-  mov [si+1], dx
+  mov [si+1], dx  ; save new position
+.done:
   pop dx
+  pop ax
   ret
 
 ; delete bullets that are out of the frame or explosions
-; CL status
-; BX position
+; SI bullet pointer
 _check_and_delete_bullet:
-  cmp cl, '#'
+  push ax
+  push dx
+  mov al, [si]      ; load status
+  cmp al, '#'
   je .remove
-  cmp bh, 0
+  mov dx, [si + 1]  ; load position
+  cmp dh, 0
   je .remove
-  cmp bh, 24
+  cmp dh, 24
   je .remove
   jmp .done
 .remove:
   call _remove_bullet ; remove the bullet
   sub si, 3           ; reset loop to former bullet -> next loop is the next
 .done:
+  pop dx
+  pop ax
   ret
 
 
@@ -66,19 +78,20 @@ _check_and_delete_bullet:
 
 ; render all bullets
 render_bullets:
-  push dx
-  mov dx, _render_bullet
+  push di
+  mov di, _render_bullet
   call _iterate_bullets
-  pop dx
+  pop di
   ret
 
 ; render a single bullet
-; CL status
-; BX position
+; SI bullet pointer
 _render_bullet:
+  push ax
   push dx
-  mov dx, bx
-  cmp cl, '#'
+  mov al, [si]      ; load status
+  mov dx, [si + 1]  ; load position
+  cmp al, '#'
   je .explosion
 .bullet:
   mov al, '|'
@@ -88,6 +101,7 @@ _render_bullet:
 .print:
   call print_object
   pop dx
+  pop ax
   ret
 
 
@@ -98,24 +112,23 @@ _render_bullet:
 ; check for collisions
 ; DX position of the object
 check_bullet_collisions:
-  push ax
-  mov ax, dx
-  mov dx, _check_bullet_collision
+  mov di, _check_bullet_collision
   call _iterate_bullets
 .done:
-  mov dx, ax
-  pop ax
   ret
 
 ; check for a collision between a bullet and an object
-; AX object position
-; BX bullet position
+; DX object position
+; SI bullet pointer
 _check_bullet_collision:
-  cmp ax, bx
+  push ax
+  mov ax, [si + 1]  ; load position
+  cmp ax, dx
   jne .done
-  mov ax, 0x0000  ; delete object
-  mov byte [si], '#' ; set bullet status to explosion
-.done
+  mov dx, 0x0000      ; set position to invalid state
+  mov byte [si], '#'  ; set bullet status to explosion
+.done:
+  pop ax
   ret
 
 
@@ -195,23 +208,18 @@ _remove_bullet:
 ;  *****************************************************
 
 ; cycle through bullets
-; DX address of the loop functions
+; DI address of the loop functions
 ; calls the function in DX with:
-; CL status of the current bullet
-; BX postition of the current bullet
+; SI bullet pointer
 _iterate_bullets:
   push si
-  push cx
   mov si, bulletListStart
 .loop:
-  mov cl, [si] ; load STATUS
-  cmp cl, 0
+  cmp si, [bulletListEnd]
   je .done
-  mov bx, [si + 1] ; load POSITION
-  call dx
+  call di
   add si, 3
   jmp .loop
 .done:
-  pop cx
   pop si
   ret

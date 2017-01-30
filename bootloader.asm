@@ -17,7 +17,7 @@ mov bx, 0x0000
 
 ; copy data into RAM
 read:
-  mov al, 0x02    ; read two sectors
+  mov al, 0x04    ; read four sectors
   mov ah, 0x02    ; int 13h subfunction 2 -> read sectors (512 bytes) from disk
   int 0x13        ; copy sectors to ES:BX
   jc read         ; carry-flag is set -> there was a read-error, retry
