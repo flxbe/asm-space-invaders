@@ -11,13 +11,14 @@ sub ah, [gameWidth]
 sar ah, 1
 mov [displayOffset], ah
 
-; initialize the bullet list by setting  the end-pointer to the list-start
+; initialize the bullet list by setting the end-pointer to the list-start
 mov word [bulletListEnd], bulletListStart
 
 
 jmp main
 
 ; include dependencies
+
 %include "./src/print_util.asm"
 %include "./src/game_util.asm"
 
@@ -30,12 +31,11 @@ jmp main
 main:
   call game
 
-  mov	cx, 0x0000	; Sleep for 0,05 seconds (cx:dx)
-	mov	dx, 0x1388	; 0x00001388 = 5000
-	mov	ah, 0x86
-	int	0x15		; Sleep
+  mov cx, 0x0000  ; 0.05 seconds (cx:dx)
+  mov	dx, 0x1388  ; 0x00001388 = 5000
+  call sleep
 
-	jmp	main	; loop
+  jmp	main	; loop
 
 
 game:

@@ -18,7 +18,7 @@ You can then start the building process by executing
 You should create the file `build/image.img`.
 
 #### Execution
-As far as I know, the programm *should* be bootable from a floppy disk. I did not test this, though.
+As far as I know the programm *should* be bootable from a floppy disk. I did not test this, though.
 
 Alternatively, it is possible to run the image using [QEMU](http://wiki.qemu.org/Main_Page).
 After the emulator is installed and the image is created, you can start the program using
@@ -26,6 +26,17 @@ After the emulator is installed and the image is created, you can start the prog
 ```bash
 ./scripts/start.sh
 ```
+
+#### Project Structure
+The bootloader is located in `bootloader.asm`. It's single purpose is to load the game's binary file
+and then jump to it's entrypoint.
+
+The main file of the game is `space-invaders.asm`. It uses the NASM pre-processor to `%include` the additional
+source files from `/src`. These include specific code for different parts of the game (e.g. the bullets, the invaders, ...).
+
+All variables are still located in `space-invaders.asm`. Notice, that the pre-processor just replaces the `%include` statement with
+the included file's content. Therefore, the assembler just interprets one continuous file. This does not require any
+additional linking.
 
 #### Additional Notes
 A big Thank You to Peter Mikkelsen and his [ASM Snake Project](https://gitlab.com/pmikkelsen/asm_snake).
