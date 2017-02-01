@@ -1,4 +1,4 @@
-### ASM Space Invaders
+## ASM Space Invaders
 
 This is a very simple clone of the popular arcade game Space Invaders.
 
@@ -29,17 +29,16 @@ After the emulator is installed and the image is created, you can start the prog
 ./scripts/start.sh
 ```
 
-#### Project Structure
+## Project Structure
 The bootloader is located in `bootloader.asm`. Its single purpose is to load the game's binary file
-and then jump to its entrypoint.
+and then jump to its entrypoint. The main file of the game is `space-invaders.asm`.
 
-The main file of the game is `space-invaders.asm`. It uses the NASM pre-processor to `%include` the additional
-source files from `/src`.
+Have a look at the [Wiki](https://github.com/flxbe/asm-space-invaders/wiki) for a more detailed documentation.
 
-All variables are still located in `space-invaders.asm`. Notice, that the pre-processor just replaces the `%include` statement with
-the included file's content. Therefore the assembler just interprets one continuous file. This does not require any
-additional linking.
+### Additional Notes
 
-#### Additional Notes
-A big Thank You to Peter Mikkelsen and his [ASM Snake Project](https://gitlab.com/pmikkelsen/asm_snake) as well as to 
+If you have any questions about this project please feel free to open an issue.
+I really enjoyed working on it and I am happy to share the little I know.
+
+A big **Thank You** to Peter Mikkelsen and his [ASM Snake Project](https://gitlab.com/pmikkelsen/asm_snake) as well as to 
 [OSDev.org](http://wiki.osdev.org/Main_Page).
