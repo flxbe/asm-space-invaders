@@ -3,7 +3,7 @@
 ;  * move
 ;  *****************************************************
 move_invaders:
-  cmp byte [invaders_move_cycle], 0x30
+  cmp byte [invaders_move_cycle], INAVDERS_MOVE_CYCLES
   je .move
   inc byte [invaders_move_cycle]
   jmp .done
@@ -13,7 +13,7 @@ move_invaders:
   push dx
   push ax
 
-  mov byte [invaders_move_cycle], 0x00 ; reset the cycle counter
+  mov byte [invaders_move_cycle], 0 ; reset the cycle counter
   mov si, invaders
   mov cl, NUM_INVADERS
 .loop:
@@ -42,7 +42,7 @@ move_invaders:
 
 .shoot:
   ; shoot, if necessary
-  cmp byte [invaders_shoot_cycle], 0x04
+  cmp byte [invaders_shoot_cycle], INVADERS_SHOOT_CYCLES
   jne .continue
   call create_invader_bullet
 .continue:

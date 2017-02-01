@@ -3,14 +3,14 @@
 ;  * move
 ;  *****************************************************
 move_bullets:
-  cmp byte [bulletMoveCycle], 0x18  ; only move the bullets every 24 frames
+  cmp byte [bullets_move_cycle], BULLETS_MOVE_CYCLE  ; only move the bullets every 24 frames
   je .move
-  inc byte [bulletMoveCycle]  ; increase the counter
+  inc byte [bullets_move_cycle]  ; increase the counter
   jmp .ret
 .move:
   push di
 
-  mov byte [bulletMoveCycle], 0x00  ; reset the counter
+  mov byte [bullets_move_cycle], 0  ; reset the counter
 
   ; delete bullets that are exploded or out of the screen
   mov di, _check_and_delete_bullet
@@ -166,12 +166,12 @@ _create_bullet:
 .player:
   dec dh  ; adjust the creator position
 .create:
-  mov di, [bulletListEnd]
+  mov di, [bullet_list_end]
   mov [di], al  ; save the status
   mov [di + 1], dx  ; save the position
   add di, 3
   mov byte [di], 0x00 ; set the end of the list
-  mov [bulletListEnd], di ; save the list end
+  mov [bullet_list_end], di ; save the list end
 .done:
   pop di
   pop dx
@@ -187,7 +187,7 @@ _remove_bullet:
   push ax
   push si
 .loop:
-  cmp si, [bulletListEnd]
+  cmp si, [bullet_list_end]
   je .done
   mov al, [si+3]  ; copy the status
   mov [si], al
@@ -197,7 +197,7 @@ _remove_bullet:
   add si, 2             ; set SI to the next bullet
   jmp .loop
 .done:
-  sub word [bulletListEnd], 3 ; adjust end of list
+  sub word [bullet_list_end], 3 ; adjust end of list
   pop si
   pop ax
   ret
@@ -213,9 +213,9 @@ _remove_bullet:
 ; SI bullet pointer
 _iterate_bullets:
   push si
-  mov si, bulletListStart
+  mov si, bullet_list
 .loop:
-  cmp si, [bulletListEnd]
+  cmp si, [bullet_list_end]
   je .done
   call di
   add si, 3

@@ -24,9 +24,9 @@ init_game:
   mov word [invaders + 22], 0x0318
 
   ; initialize the bullets
-  mov byte [bulletMoveCycle], 0
-  mov byte [bulletListStart], 0
-  mov word [bulletListEnd], bulletListStart
+  mov byte [bullets_move_cycle], 0
+  mov byte [bullet_list], 0
+  mov word [bullet_list_end], bullet_list
   
   ret
 

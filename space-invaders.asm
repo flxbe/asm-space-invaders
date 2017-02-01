@@ -2,6 +2,10 @@
 %define NUM_INVADERS 12
 %define GAME_WIDTH 27
 
+%define INAVDERS_MOVE_CYCLES 40
+%define INVADERS_SHOOT_CYCLES 4
+%define BULLETS_MOVE_CYCLE 28
+
 ; clear the cursor blinking
 mov	ah, 0x01
 mov	cx, 0x2000
@@ -196,6 +200,6 @@ segment .bss
   ; STATUS == #: explosion
   ; STATUS == p: player bullet
   ; STATUS == i: invader bullet
-  bulletMoveCycle resb 1
-  bulletListEnd resw 1
-  bulletListStart resb 1
+  bullets_move_cycle resb 1
+  bullet_list_end resw 1
+  bullet_list resb 1
