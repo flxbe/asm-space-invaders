@@ -17,11 +17,11 @@ print_window:
   add dl, 3
   ; top
   mov dh, 0x05
-  mov si, window_1
+  mov si, window_bar
   call print_string
   ; space 1
   inc dh
-  mov si, window_2
+  mov si, window_space
   call print_string
   ; title
   inc dh
@@ -29,7 +29,7 @@ print_window:
   call print_string
   ; space 2
   inc dh
-  mov si, window_3
+  mov si, window_space
   call print_string
   ; options
   inc dh
@@ -37,11 +37,11 @@ print_window:
   call print_string
   ; space 3
   inc dh
-  mov si, window_4
+  mov si, window_space
   call print_string
   ; bottom
   inc dh
-  mov si, window_5
+  mov si, window_bar
   call print_string
   ; return
   pop dx

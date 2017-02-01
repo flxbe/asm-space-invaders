@@ -138,7 +138,7 @@ end:
 .wait:
   call get_key
   mov al, [key_pressed]
-  cmp al, ' '
+  cmp al, 'r'
   je .game
   jmp .wait
 .game:
@@ -147,11 +147,8 @@ end:
 
 
 ; window
-window_1 db "######################", 0
-window_2 db "#                    #", 0
-window_3 db "#                    #", 0
-window_4 db "#                    #", 0
-window_5 db "######################", 0
+window_bar db "######################", 0
+window_space db "#                    #", 0
 
 ; intro
 intro_string_t db "#   SPACE INVADERS   #", 0
@@ -160,7 +157,7 @@ intro_string_o db "#   SPACE to start   #", 0
 ; end
 end_string_w db "#    PLAYER  wins    #", 0
 end_string_l db "#    INVADERS win    #", 0
-end_string_o db "#  SPACE to restart  #", 0
+end_string_o db "# Press R to restart #", 0
 
 ; controls
 left_string db "A = move left", 0
@@ -190,7 +187,7 @@ segment .bss
   player_pos resw 1
   ; invaders
   invaders resw NUM_INVADERS
-  num_invaders_alive resb 12
+  num_invaders_alive resb 11
   invaders_move_direction resb 1
   invaders_move_cycle resb 1
   invaders_shoot_cycle resb 1

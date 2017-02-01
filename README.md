@@ -30,8 +30,8 @@ After the emulator is installed and the image is created, you can start the prog
 ```
 
 #### Project Structure
-The bootloader is located in `bootloader.asm`. It's single purpose is to load the game's binary file
-and then jump to it's entrypoint.
+The bootloader is located in `bootloader.asm`. Its single purpose is to load the game's binary file
+and then jump to its entrypoint.
 
 The main file of the game is `space-invaders.asm`. It uses the NASM pre-processor to `%include` the additional
 source files from `/src`.
