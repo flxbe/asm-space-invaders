@@ -3,7 +3,7 @@
 ;  * move
 ;  *****************************************************
 move_invaders:
-  cmp byte [invaders_move_cycle], INAVDERS_MOVE_CYCLES
+  cmp byte [invaders_move_cycle], INVADERS_MOVE_CYCLES
   je .move
   inc byte [invaders_move_cycle]
   jmp .done
