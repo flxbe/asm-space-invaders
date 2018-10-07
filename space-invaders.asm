@@ -191,7 +191,7 @@ segment .bss
   player_pos resw 1
   ; invaders
   invaders resw NUM_INVADERS
-  num_invaders_alive resb 11
+  num_invaders_alive resb 1
   invaders_move_direction resb 1
   invaders_move_cycle resb 1
   invaders_shoot_cycle resb 1
