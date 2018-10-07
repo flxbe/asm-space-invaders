@@ -65,7 +65,7 @@ move_cursor:
 
 ; AL character
 print_char:
-  mov ah, 0x0E	;t ell BIOS that we need to print one charater on screen
+  mov ah, 0x0E	; tell BIOS that we need to print one character on screen
   mov bh, 0x00	; page number
   mov bl, 0x07	; text attribute 0x07 is lightgrey font on black background
   int 0x10
