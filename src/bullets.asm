@@ -60,7 +60,7 @@ _check_and_delete_bullet:
   mov dx, [si + 1]  ; load position
   cmp dh, 0
   je .remove
-  cmp dh, 24
+  cmp dh, GAME_HEIGHT - 1
   je .remove
   jmp .done
 .remove:

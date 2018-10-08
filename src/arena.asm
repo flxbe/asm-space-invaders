@@ -8,7 +8,7 @@ render_arena:
 
   mov al, '#'
   mov dh, 0
-  mov cl, 25
+  mov cl, GAME_HEIGHT
 .loop:
   mov dl, 0
   call print_object
