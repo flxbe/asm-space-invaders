@@ -90,7 +90,7 @@ move:
   sub	word dx, 0x0100
 	jmp .done
 .down:
-  cmp dh, 24
+  cmp dh, GAME_HEIGHT - 1
   jge .done
   add	word dx, 0x0100
 	jmp .done

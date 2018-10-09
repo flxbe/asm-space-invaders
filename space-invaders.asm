@@ -1,6 +1,7 @@
 ; constants
 %define NUM_INVADERS 12
 %define GAME_WIDTH 27
+%define GAME_HEIGHT 25
 
 %define INVADERS_MOVE_CYCLES 40
 %define INVADERS_SHOOT_CYCLES 4
