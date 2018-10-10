@@ -120,7 +120,7 @@ game:
   call print_string
 .continue:
   mov cx, 0x0000  ; 0.05 seconds (cx:dx)
-  mov	dx, 0x1388  ; 0x00001388 = 5000
+  mov dx, 0x1388  ; 0x00001388 = 5000
   call sleep
   jmp	.loop
 .done:
