@@ -196,7 +196,7 @@ segment .bss
   invaders_move_direction resb 1
   invaders_move_cycle resb 1
   invaders_shoot_cycle resb 1
-  ; bullets:  0x PY PX STATUS
+  ; bullets:  0x STATUS PY PX
   ; STATUS == 0: end of list
   ; STATUS == #: explosion
   ; STATUS == p: player bullet

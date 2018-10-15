@@ -3,7 +3,7 @@
 ;  * move
 ;  *****************************************************
 move_bullets:
-  cmp byte [bullets_move_cycle], BULLETS_MOVE_CYCLE  ; only move the bullets every 24 frames
+  cmp byte [bullets_move_cycle], BULLETS_MOVE_CYCLE  ; only move the bullets every 28 frames
   je .move
   inc byte [bullets_move_cycle]  ; increase the counter
   jmp .ret
@@ -49,7 +49,7 @@ _move_bullet:
   pop ax
   ret
 
-; delete bullets that are out of the frame or explosions
+; delete bullets that are out of the screen or exploded
 ; SI bullet pointer
 _check_and_delete_bullet:
   push ax

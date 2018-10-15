@@ -36,7 +36,7 @@ move_invaders:
   cmp dx, 0x0000
   jne .shoot
 
-  ; dev invader counter
+  ; dec invader counter
   dec byte [num_invaders_alive]
   jmp .continue
 
