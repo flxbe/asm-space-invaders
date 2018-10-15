@@ -51,7 +51,7 @@ move_invaders:
   jnz .loop
 
   ; update the shoot cycle
-  cmp byte [invaders_shoot_cycle], 4
+  cmp byte [invaders_shoot_cycle], INVADERS_SHOOT_CYCLES
   jne .inc_shoot_cycle
   mov byte [invaders_shoot_cycle], 0
   jmp .update_move_direction
