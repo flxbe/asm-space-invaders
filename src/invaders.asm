@@ -1,3 +1,5 @@
+; constants
+%define INVADERS 'T'
 
 ; ******************************************************
 ;  * move
@@ -21,7 +23,7 @@ move_invaders:
   mov dx, [si]
 
   ; skip invader, if destroyed
-  cmp dx, 0x0000
+  cmp dx, INVALID_STATE
   je .continue
 
   ; move invader
@@ -33,7 +35,7 @@ move_invaders:
 
   mov [si], dx
 
-  cmp dx, 0x0000
+  cmp dx, INVALID_STATE
   jne .shoot
 
   ; dec invader counter
@@ -46,7 +48,7 @@ move_invaders:
   jne .continue
   call create_invader_bullet
 .continue:
-  add si, 2
+  add si, INVADERS_NEXT_OFFSET
   dec cl
   jnz .loop
 
@@ -83,16 +85,16 @@ render_invaders:
   push ax
   push cx
 
-  mov al, 'T'
+  mov al, INVADERS
   mov si, invaders
   mov cl, NUM_INVADERS
 .loop:
   mov dx, [si]
-  cmp dx, 0x0000
+  cmp dx, INVALID_STATE
   je .continue
   call print_object
 .continue:
-  add si, 2
+  add si, INVADERS_NEXT_OFFSET
   dec cl
   jnz .loop
 .done:

@@ -1,3 +1,8 @@
+; constants
+%define BULLET '|'
+%define EXPLOSION_BULLET '#'
+%define PLAYER_BULLET 'p'
+%define INVADER_BULLET 'i'
 
 ; ******************************************************
 ;  * move
@@ -30,20 +35,20 @@ _move_bullet:
   push ax
   push dx
   mov al, [si]      ; load status
-  mov dx, [si + 1]  ; load position
-  cmp al, 'p'
+  mov dx, [si + BULLET_POSITION_OFFSET]  ; load position
+  cmp al, PLAYER_BULLET
   je .player
-  cmp al, 'i'
+  cmp al, INVADER_BULLET
   je .invader
   jmp .done
 .player:
-  mov al, 0
+  mov al, MOVE_UP
   jmp .move
 .invader:
-  mov al, 2
+  mov al, MOVE_DOWN
 .move:
   call move
-  mov [si+1], dx  ; save new position
+  mov [si + BULLET_POSITION_OFFSET], dx  ; save new position
 .done:
   pop dx
   pop ax
@@ -55,9 +60,9 @@ _check_and_delete_bullet:
   push ax
   push dx
   mov al, [si]      ; load status
-  cmp al, '#'
+  cmp al, EXPLOSION_BULLET
   je .remove
-  mov dx, [si + 1]  ; load position
+  mov dx, [si + BULLET_POSITION_OFFSET]  ; load position
   cmp dh, 0
   je .remove
   cmp dh, GAME_HEIGHT - 1
@@ -65,7 +70,7 @@ _check_and_delete_bullet:
   jmp .done
 .remove:
   call _remove_bullet ; remove the bullet
-  sub si, 3           ; reset loop to former bullet -> next loop is the next
+  sub si, BULLET_NEXT_OFFSET           ; reset loop to former bullet -> next loop is the next
 .done:
   pop dx
   pop ax
@@ -90,10 +95,10 @@ _render_bullet:
   push ax
   push dx
   mov al, [si]      ; load status
-  mov dx, [si + 1]  ; load position
-  cmp al, '#'
+  mov dx, [si + BULLET_POSITION_OFFSET]  ; load position
+  cmp al, EXPLOSION_BULLET
   je .print
-  mov al, '|'  ; set bullet
+  mov al, BULLET  ; set bullet
 .print:
   call print_object
   pop dx
@@ -118,11 +123,11 @@ check_bullet_collisions:
 ; SI bullet pointer
 _check_bullet_collision:
   push ax
-  mov ax, [si + 1]  ; load position
+  mov ax, [si + BULLET_POSITION_OFFSET]  ; load position
   cmp ax, dx
   jne .done
-  mov dx, 0x0000      ; set position to invalid state
-  mov byte [si], '#'  ; set bullet status to explosion
+  mov dx, INVALID_STATE      ; set position to invalid state
+  mov byte [si], EXPLOSION_BULLET  ; set bullet status to explosion
 .done:
   pop ax
   ret
@@ -135,7 +140,7 @@ _check_bullet_collision:
 ; let the player shoot a bullet
 create_player_bullet:
   push ax
-  mov al, 'p'
+  mov al, PLAYER_BULLET
   call _create_bullet
   pop ax
   ret
@@ -143,7 +148,7 @@ create_player_bullet:
 ; let an invader shoot a bullet
 create_invader_bullet:
   push ax
-  mov al, 'i'
+  mov al, INVADER_BULLET
   call _create_bullet
   pop ax
   ret
@@ -154,7 +159,7 @@ create_invader_bullet:
 _create_bullet:
   push dx
   push di
-  cmp al, 'p'
+  cmp al, PLAYER_BULLET
   je .player
 .invader:
   inc dh  ; adjust the creator position
@@ -164,8 +169,8 @@ _create_bullet:
 .create:
   mov di, [bullet_list_end]
   mov [di], al  ; save the status
-  mov [di + 1], dx  ; save the position
-  add di, 3
+  mov [di + BULLET_POSITION_OFFSET], dx  ; save the position
+  add di, BULLET_NEXT_OFFSET
   mov byte [di], 0x00 ; set the end of the list
   mov [bullet_list_end], di ; save the list end
 .done:
@@ -185,15 +190,14 @@ _remove_bullet:
 .loop:
   cmp si, [bullet_list_end]
   je .done
-  mov al, [si+3]  ; copy the status
+  mov al, [si + BULLET_NEXT_OFFSET]  ; copy the status
   mov [si], al
-  inc si
-  mov ax, [si+3]  ; copy the position
-  mov [si], ax
-  add si, 2             ; set SI to the next bullet
+  mov ax, [si + BULLET_NEXT_OFFSET + BULLET_POSITION_OFFSET]  ; copy the position
+  mov [si + BULLET_POSITION_OFFSET], ax
+  add si, BULLET_NEXT_OFFSET             ; set SI to the next bullet
   jmp .loop
 .done:
-  sub word [bullet_list_end], 3 ; adjust end of list
+  sub word [bullet_list_end], BULLET_NEXT_OFFSET ; adjust end of list
   pop si
   pop ax
   ret

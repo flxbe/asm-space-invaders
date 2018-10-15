@@ -1,3 +1,6 @@
+; constants
+%define WALL '#'
+
 ; ******************************************************
 ;  * render
 ;  *****************************************************
@@ -6,7 +9,7 @@ render_arena:
   push cx
   push dx
 
-  mov al, '#'
+  mov al, WALL
   mov dh, 0
   mov cl, GAME_HEIGHT
 .loop:

@@ -1,3 +1,10 @@
+; constants
+%define PLAYER 'M'
+
+%define MOVE_LEFT_KEY 'a'
+%define MOVE_RIGHT_KEY 'd'
+%define SHOOT_KEY ' '
+
 ; ******************************************************
 ;  * move
 ;  *****************************************************
@@ -9,22 +16,22 @@ move_player:
   mov dx, [player_pos]
   mov al, [key_pressed]
 
-  cmp al, 'a'
+  cmp al, MOVE_LEFT_KEY
   je .left
-  cmp al, 'd'
+  cmp al, MOVE_RIGHT_KEY
   je .right
-  cmp al, ' '
+  cmp al, SHOOT_KEY
   je .shoot
   jmp .check
 .shoot:
   call create_player_bullet
   jmp .check
 .left:
-  mov al, 3
+  mov al, MOVE_LEFT
   call move
   jmp .check
 .right:
-  mov al, 1
+  mov al, MOVE_RIGHT
   call move
 .check:
   call check_bullet_collisions
@@ -42,11 +49,11 @@ render_player:
   push ax
   push dx
   mov dx, [player_pos]
-  cmp dx, 0x0000
+  cmp dx, INVALID_STATE
   je .done
-  mov al, 'M'
-  call print_object 
+  mov al, PLAYER
+  call print_object
 .done:
   pop dx
-  pop ax 
+  pop ax
   ret
