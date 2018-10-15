@@ -63,8 +63,6 @@ check_game_state:
 sleep:
   push ax
 
-  mov	cx, 0x0000	; Sleep for 0,05 seconds (cx:dx)
-  mov	dx, 0x1388	; 0x00001388 = 5000
   mov	ah, 0x86
   int	0x15		; Sleep
 
