@@ -92,12 +92,8 @@ _render_bullet:
   mov al, [si]      ; load status
   mov dx, [si + 1]  ; load position
   cmp al, '#'
-  je .explosion
-.bullet:
-  mov al, '|'
-  jmp .print
-.explosion:
-  mov al, '#'
+  je .print
+  mov al, '|'  ; set bullet
 .print:
   call print_object
   pop dx
