@@ -35,10 +35,14 @@ and then jump to its entrypoint. The main file of the game is `space-invaders.as
 
 Have a look at the [Wiki](https://github.com/flxbe/asm-space-invaders/wiki) for a more detailed documentation.
 
+## Contributors
+
+I want to thank [blue-9](https://github.com/blue-9) for the contributions to this project.
+
 ### Additional Notes
 
 If you have any questions about this project please feel free to open an issue.
 I really enjoyed working on it and I am happy to share the little I know.
 
-A big **Thank You** to Peter Mikkelsen and his [ASM Snake Project](https://gitlab.com/pmikkelsen/asm_snake) as well as to 
+A **Big Thank You** to Peter Mikkelsen and his [ASM Snake Project](https://gitlab.com/pmikkelsen/asm_snake) as well as to 
 [OSDev.org](http://wiki.osdev.org/Main_Page).
