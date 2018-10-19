@@ -1,4 +1,3 @@
-
 ; ******************************************************
 ;  * move
 ;  *****************************************************
@@ -21,7 +20,7 @@ move_invaders:
   mov dx, [si]
 
   ; skip invader, if destroyed
-  cmp dx, 0x0000
+  cmp dx, INVALID_STATE
   je .continue
 
   ; move invader
@@ -33,7 +32,7 @@ move_invaders:
 
   mov [si], dx
 
-  cmp dx, 0x0000
+  cmp dx, INVALID_STATE
   jne .shoot
 
   ; dec invader counter
@@ -46,7 +45,7 @@ move_invaders:
   jne .continue
   call create_invader_bullet
 .continue:
-  add si, 2
+  add si, INVADER_SIZE
   dec cl
   jnz .loop
 
@@ -61,7 +60,7 @@ move_invaders:
 .update_move_direction:
   mov al, [invaders_move_direction]
   inc al
-  cmp al, 4
+  cmp al, MOVE_RESET
   jl .save_move_direction
   xor al, al  ; reset the move direction
 .save_move_direction:
@@ -83,16 +82,16 @@ render_invaders:
   push ax
   push cx
 
-  mov al, 'T'
+  mov al, ICON_INVADER
   mov si, invaders
   mov cl, NUM_INVADERS
 .loop:
   mov dx, [si]
-  cmp dx, 0x0000
+  cmp dx, INVALID_STATE
   je .continue
   call print_object
 .continue:
-  add si, 2
+  add si, INVADER_SIZE
   dec cl
   jnz .loop
 .done:

@@ -1,11 +1,64 @@
 ; constants
-%define NUM_INVADERS 12
+
+; GAME WINDOW PARAMETERS
 %define GAME_WIDTH 27
 %define GAME_HEIGHT 25
 
+; GAME PARAMETERES
+%define NUM_INVADERS 12
 %define INVADERS_MOVE_CYCLES 40
 %define INVADERS_SHOOT_CYCLES 4
 %define BULLETS_MOVE_CYCLE 28
+
+; SPECIAL CONSTANT
+%define INVALID_STATE 0x0000
+
+; ICONS
+%define ICON_PLAYER 'M'
+%define ICON_INVADER 'T'
+%define ICON_BULLET '|'
+%define ICON_EXPLOSION_BULLET '#'
+%define ICON_WALL '#'
+
+; GAME WINNERS
+%define PLAYER_WIN 0
+%define INVADERS_WIN 1
+
+; PROGRAM STATES
+%define PROGRAM_START_STATE 0
+%define PROGRAM_GAME_STATE 1
+%define PROGRAM_END_STATE 2
+
+; PLAY KEYS
+%define START_KEY ' '
+%define RETRY_KEY 'r'
+%define MOVE_LEFT_KEY 'a'
+%define MOVE_RIGHT_KEY 'd'
+%define SHOOT_KEY ' '
+
+; MOVE DIRECTIONS
+%define MOVE_UP 0
+%define MOVE_RIGHT 1
+%define MOVE_DOWN 2
+%define MOVE_LEFT 3
+%define MOVE_RESET 4
+
+; BULLET
+%define BULLET_STATUS_END_OF_LIST 0
+%define BULLET_STATUS_EXPLOSION '#'
+%define BULLET_STATUS_PLAYER 'p'
+%define BULLET_STATUS_INVADER 'i'
+
+%define BULLET_STATUS_OFFSET 0
+%define BULLET_STATUS_SIZE 1
+%define BULLET_POSITION_OFFSET BULLET_STATUS_OFFSET + BULLET_STATUS_SIZE
+%define BULLET_POSITION_SIZE 2
+%define BULLET_SIZE BULLET_POSITION_OFFSET + BULLET_POSITION_SIZE
+
+; INVADER
+%define INVADER_POSITION_OFFSET 0
+%define INVADER_POSITION_SIZE 2
+%define INVADER_SIZE INVADER_POSITION_OFFSET + INVADER_POSITION_SIZE
 
 ; clear the cursor blinking
 mov	ah, 0x01
@@ -37,9 +90,9 @@ jmp main
 ; main loop
 main:
   mov ah, [program_state]
-  cmp ah, 1
+  cmp ah, PROGRAM_GAME_STATE
   je .game
-  cmp ah, 2
+  cmp ah, PROGRAM_END_STATE
   je .end
 .intro:
   call intro
@@ -62,11 +115,11 @@ intro:
 .wait:
   call get_key
   mov al, [key_pressed]
-  cmp al, ' '
+  cmp al, START_KEY
   je .game
   jmp .wait
 .game:
-  mov byte [program_state], 1
+  mov byte [program_state], PROGRAM_GAME_STATE
   ret
 
 
@@ -76,14 +129,14 @@ game:
 .loop:
 
   ; check the current program state
-  cmp byte [program_state], 1
+  cmp byte [program_state], PROGRAM_GAME_STATE
   jne .done
 
   ; get key if available
   call check_key
 
   ; check the game state
-  cmp word [player_pos], 0x0000
+  cmp word [player_pos], INVALID_STATE
   je .invaders
   ; check whether the player wins
   cmp byte [num_invaders_alive], 0
@@ -91,10 +144,10 @@ game:
   ; execute a game step
   jmp .execute
 .invaders:
-  mov byte [winner], 1
+  mov byte [winner], INVADERS_WIN
   jmp .done
 .player:
-  mov byte [winner], 0
+  mov byte [winner], PLAYER_WIN
   jmp .done
 .execute:
   ; move
@@ -125,13 +178,13 @@ game:
   call sleep
   jmp	.loop
 .done:
-  mov byte [program_state], 2
+  mov byte [program_state], PROGRAM_END_STATE
   ret
 
 
 ; end screen
 end:
-  cmp byte [winner], 0
+  cmp byte [winner], PLAYER_WIN
   je .player
   mov ax, end_string_l
   jmp .continue
@@ -143,11 +196,11 @@ end:
 .wait:
   call get_key
   mov al, [key_pressed]
-  cmp al, 'r'
+  cmp al, RETRY_KEY
   je .game
   jmp .wait
 .game:
-  mov byte [program_state], 1
+  mov byte [program_state], PROGRAM_GAME_STATE
   ret
 
 

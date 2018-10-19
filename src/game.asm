@@ -6,28 +6,28 @@ init_game:
   mov word [player_pos], 0x1401
 
   ; initialize the invaders
-  mov byte [invaders_move_direction], 1
+  mov byte [invaders_move_direction], MOVE_RIGHT
   mov byte [invaders_move_cycle], 0
   mov byte [invaders_shoot_cycle], 0
   mov byte [num_invaders_alive], NUM_INVADERS
-  mov word [invaders +  0], 0x0102
-  mov word [invaders +  2], 0x0304
-  mov word [invaders +  4], 0x0106
-  mov word [invaders +  6], 0x0308
-  mov word [invaders +  8], 0x010A
-  mov word [invaders + 10], 0x030C
-  mov word [invaders + 12], 0x010E
-  mov word [invaders + 14], 0x0310
-  mov word [invaders + 16], 0x0112
-  mov word [invaders + 18], 0x0314
-  mov word [invaders + 20], 0x0116
-  mov word [invaders + 22], 0x0318
+  mov word [invaders + INVADER_SIZE *  0], 0x0102
+  mov word [invaders + INVADER_SIZE *  1], 0x0304
+  mov word [invaders + INVADER_SIZE *  2], 0x0106
+  mov word [invaders + INVADER_SIZE *  3], 0x0308
+  mov word [invaders + INVADER_SIZE *  4], 0x010A
+  mov word [invaders + INVADER_SIZE *  5], 0x030C
+  mov word [invaders + INVADER_SIZE *  6], 0x010E
+  mov word [invaders + INVADER_SIZE *  7], 0x0310
+  mov word [invaders + INVADER_SIZE *  8], 0x0112
+  mov word [invaders + INVADER_SIZE *  9], 0x0314
+  mov word [invaders + INVADER_SIZE * 10], 0x0116
+  mov word [invaders + INVADER_SIZE * 11], 0x0318
 
   ; initialize the bullets
   mov byte [bullets_move_cycle], 0
   mov byte [bullet_list], 0
   mov word [bullet_list_end], bullet_list
-  
+
   ret
 
 
@@ -39,7 +39,7 @@ init_game:
 ;    2: player wins
 check_game_state:
   ; check whether the player is destroyed
-  cmp word [player_pos], 0x0000
+  cmp word [player_pos], INVALID_STATE
   je .invaders
 
   ; check whether the player wins
@@ -76,11 +76,11 @@ sleep:
 ; DX position to move
 ; AL direction
 move:
-  cmp al, 1
+  cmp al, MOVE_RIGHT
   je .right
-  cmp al, 2
+  cmp al, MOVE_DOWN
   je .down
-  cmp al, 3
+  cmp al, MOVE_LEFT
   je .left
 .up:
   cmp dh, 0
