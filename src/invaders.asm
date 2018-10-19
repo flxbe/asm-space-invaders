@@ -45,7 +45,7 @@ move_invaders:
   jne .continue
   call create_invader_bullet
 .continue:
-  add si, INVADERS_SIZE
+  add si, INVADER_SIZE
   dec cl
   jnz .loop
 
@@ -82,7 +82,7 @@ render_invaders:
   push ax
   push cx
 
-  mov al, INVADERS
+  mov al, ICON_INVADER
   mov si, invaders
   mov cl, NUM_INVADERS
 .loop:
@@ -91,7 +91,7 @@ render_invaders:
   je .continue
   call print_object
 .continue:
-  add si, INVADERS_SIZE
+  add si, INVADER_SIZE
   dec cl
   jnz .loop
 .done:

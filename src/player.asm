@@ -44,7 +44,7 @@ render_player:
   mov dx, [player_pos]
   cmp dx, INVALID_STATE
   je .done
-  mov al, PLAYER
+  mov al, ICON_PLAYER
   call print_object
 .done:
   pop dx

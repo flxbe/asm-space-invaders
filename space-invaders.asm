@@ -14,20 +14,20 @@
 %define INVALID_STATE 0x0000
 
 ; ICONS
-%define PLAYER 'M'
-%define INVADERS 'T'
-%define BULLET '|'
-%define EXPLOSION_BULLET '#'
-%define WALL '#'
+%define ICON_PLAYER 'M'
+%define ICON_INVADER 'T'
+%define ICON_BULLET '|'
+%define ICON_EXPLOSION_BULLET '#'
+%define ICON_WALL '#'
 
 ; GAME WINNERS
 %define PLAYER_WIN 0
 %define INVADERS_WIN 1
 
-; GAME STATES
-%define START_STATE 0
-%define GAME_STATE 1
-%define END_STATE 2
+; PROGRAM STATES
+%define PROGRAM_START_STATE 0
+%define PROGRAM_GAME_STATE 1
+%define PROGRAM_END_STATE 2
 
 ; PLAY KEYS
 %define START_KEY ' '
@@ -55,10 +55,10 @@
 %define BULLET_POSITION_SIZE 2
 %define BULLET_SIZE BULLET_POSITION_OFFSET + BULLET_POSITION_SIZE
 
-; INVADERS
-%define INVADERS_POSITION_OFFSET 0
-%define INVADERS_POSITION_SIZE 2
-%define INVADERS_SIZE INVADERS_POSITION_OFFSET + INVADERS_POSITION_SIZE
+; INVADER
+%define INVADER_POSITION_OFFSET 0
+%define INVADER_POSITION_SIZE 2
+%define INVADER_SIZE INVADER_POSITION_OFFSET + INVADER_POSITION_SIZE
 
 ; clear the cursor blinking
 mov	ah, 0x01
@@ -90,9 +90,9 @@ jmp main
 ; main loop
 main:
   mov ah, [program_state]
-  cmp ah, GAME_STATE
+  cmp ah, PROGRAM_GAME_STATE
   je .game
-  cmp ah, END_STATE
+  cmp ah, PROGRAM_END_STATE
   je .end
 .intro:
   call intro
@@ -119,7 +119,7 @@ intro:
   je .game
   jmp .wait
 .game:
-  mov byte [program_state], GAME_STATE
+  mov byte [program_state], PROGRAM_GAME_STATE
   ret
 
 
@@ -129,7 +129,7 @@ game:
 .loop:
 
   ; check the current program state
-  cmp byte [program_state], GAME_STATE
+  cmp byte [program_state], PROGRAM_GAME_STATE
   jne .done
 
   ; get key if available
@@ -178,7 +178,7 @@ game:
   call sleep
   jmp	.loop
 .done:
-  mov byte [program_state], END_STATE
+  mov byte [program_state], PROGRAM_END_STATE
   ret
 
 
@@ -200,7 +200,7 @@ end:
   je .game
   jmp .wait
 .game:
-  mov byte [program_state], GAME_STATE
+  mov byte [program_state], PROGRAM_GAME_STATE
   ret
 
 

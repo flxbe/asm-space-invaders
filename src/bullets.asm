@@ -54,7 +54,7 @@ _check_and_delete_bullet:
   push ax
   push dx
   mov al, [si]      ; load status
-  cmp al, EXPLOSION_BULLET
+  cmp al, ICON_EXPLOSION_BULLET
   je .remove
   mov dx, [si + BULLET_POSITION_OFFSET]  ; load position
   cmp dh, 0
@@ -90,9 +90,9 @@ _render_bullet:
   push dx
   mov al, [si]      ; load status
   mov dx, [si + BULLET_POSITION_OFFSET]  ; load position
-  cmp al, EXPLOSION_BULLET
+  cmp al, ICON_EXPLOSION_BULLET
   je .print
-  mov al, BULLET  ; set bullet
+  mov al, ICON_BULLET  ; set bullet
 .print:
   call print_object
   pop dx
@@ -121,7 +121,7 @@ _check_bullet_collision:
   cmp ax, dx
   jne .done
   mov dx, INVALID_STATE      ; set position to invalid state
-  mov byte [si], EXPLOSION_BULLET  ; set bullet status to explosion
+  mov byte [si], ICON_EXPLOSION_BULLET  ; set bullet status to explosion
 .done:
   pop ax
   ret
