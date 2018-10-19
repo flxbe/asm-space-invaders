@@ -1,6 +1,3 @@
-; constants
-%define INVADERS 'T'
-
 ; ******************************************************
 ;  * move
 ;  *****************************************************
@@ -48,7 +45,7 @@ move_invaders:
   jne .continue
   call create_invader_bullet
 .continue:
-  add si, INVADERS_NEXT_OFFSET
+  add si, INVADERS_SIZE
   dec cl
   jnz .loop
 
@@ -63,7 +60,7 @@ move_invaders:
 .update_move_direction:
   mov al, [invaders_move_direction]
   inc al
-  cmp al, 4
+  cmp al, MOVE_RESET
   jl .save_move_direction
   xor al, al  ; reset the move direction
 .save_move_direction:
@@ -94,7 +91,7 @@ render_invaders:
   je .continue
   call print_object
 .continue:
-  add si, INVADERS_NEXT_OFFSET
+  add si, INVADERS_SIZE
   dec cl
   jnz .loop
 .done:

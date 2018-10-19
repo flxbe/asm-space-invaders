@@ -10,18 +10,18 @@ init_game:
   mov byte [invaders_move_cycle], 0
   mov byte [invaders_shoot_cycle], 0
   mov byte [num_invaders_alive], NUM_INVADERS
-  mov word [invaders + INVADERS_NEXT_OFFSET *  0], 0x0102
-  mov word [invaders + INVADERS_NEXT_OFFSET *  1], 0x0304
-  mov word [invaders + INVADERS_NEXT_OFFSET *  2], 0x0106
-  mov word [invaders + INVADERS_NEXT_OFFSET *  3], 0x0308
-  mov word [invaders + INVADERS_NEXT_OFFSET *  4], 0x010A
-  mov word [invaders + INVADERS_NEXT_OFFSET *  5], 0x030C
-  mov word [invaders + INVADERS_NEXT_OFFSET *  6], 0x010E
-  mov word [invaders + INVADERS_NEXT_OFFSET *  7], 0x0310
-  mov word [invaders + INVADERS_NEXT_OFFSET *  8], 0x0112
-  mov word [invaders + INVADERS_NEXT_OFFSET *  9], 0x0314
-  mov word [invaders + INVADERS_NEXT_OFFSET * 10], 0x0116
-  mov word [invaders + INVADERS_NEXT_OFFSET * 11], 0x0318
+  mov word [invaders + INVADERS_SIZE *  0], 0x0102
+  mov word [invaders + INVADERS_SIZE *  1], 0x0304
+  mov word [invaders + INVADERS_SIZE *  2], 0x0106
+  mov word [invaders + INVADERS_SIZE *  3], 0x0308
+  mov word [invaders + INVADERS_SIZE *  4], 0x010A
+  mov word [invaders + INVADERS_SIZE *  5], 0x030C
+  mov word [invaders + INVADERS_SIZE *  6], 0x010E
+  mov word [invaders + INVADERS_SIZE *  7], 0x0310
+  mov word [invaders + INVADERS_SIZE *  8], 0x0112
+  mov word [invaders + INVADERS_SIZE *  9], 0x0314
+  mov word [invaders + INVADERS_SIZE * 10], 0x0116
+  mov word [invaders + INVADERS_SIZE * 11], 0x0318
 
   ; initialize the bullets
   mov byte [bullets_move_cycle], 0

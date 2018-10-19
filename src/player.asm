@@ -1,10 +1,3 @@
-; constants
-%define PLAYER 'M'
-
-%define MOVE_LEFT_KEY 'a'
-%define MOVE_RIGHT_KEY 'd'
-%define SHOOT_KEY ' '
-
 ; ******************************************************
 ;  * move
 ;  *****************************************************

@@ -1,9 +1,3 @@
-; constants
-%define BULLET '|'
-%define EXPLOSION_BULLET '#'
-%define PLAYER_BULLET 'p'
-%define INVADER_BULLET 'i'
-
 ; ******************************************************
 ;  * move
 ;  *****************************************************
@@ -36,9 +30,9 @@ _move_bullet:
   push dx
   mov al, [si]      ; load status
   mov dx, [si + BULLET_POSITION_OFFSET]  ; load position
-  cmp al, PLAYER_BULLET
+  cmp al, BULLET_STATUS_PLAYER
   je .player
-  cmp al, INVADER_BULLET
+  cmp al, BULLET_STATUS_INVADER
   je .invader
   jmp .done
 .player:
@@ -70,7 +64,7 @@ _check_and_delete_bullet:
   jmp .done
 .remove:
   call _remove_bullet ; remove the bullet
-  sub si, BULLET_NEXT_OFFSET           ; reset loop to former bullet -> next loop is the next
+  sub si, BULLET_SIZE           ; reset loop to former bullet -> next loop is the next
 .done:
   pop dx
   pop ax
@@ -140,7 +134,7 @@ _check_bullet_collision:
 ; let the player shoot a bullet
 create_player_bullet:
   push ax
-  mov al, PLAYER_BULLET
+  mov al, BULLET_STATUS_PLAYER
   call _create_bullet
   pop ax
   ret
@@ -148,7 +142,7 @@ create_player_bullet:
 ; let an invader shoot a bullet
 create_invader_bullet:
   push ax
-  mov al, INVADER_BULLET
+  mov al, BULLET_STATUS_INVADER
   call _create_bullet
   pop ax
   ret
@@ -159,7 +153,7 @@ create_invader_bullet:
 _create_bullet:
   push dx
   push di
-  cmp al, PLAYER_BULLET
+  cmp al, BULLET_STATUS_PLAYER
   je .player
 .invader:
   inc dh  ; adjust the creator position
@@ -170,7 +164,7 @@ _create_bullet:
   mov di, [bullet_list_end]
   mov [di], al  ; save the status
   mov [di + BULLET_POSITION_OFFSET], dx  ; save the position
-  add di, BULLET_NEXT_OFFSET
+  add di, BULLET_SIZE
   mov byte [di], 0x00 ; set the end of the list
   mov [bullet_list_end], di ; save the list end
 .done:
@@ -190,14 +184,14 @@ _remove_bullet:
 .loop:
   cmp si, [bullet_list_end]
   je .done
-  mov al, [si + BULLET_NEXT_OFFSET]  ; copy the status
+  mov al, [si + BULLET_SIZE]  ; copy the status
   mov [si], al
-  mov ax, [si + BULLET_NEXT_OFFSET + BULLET_POSITION_OFFSET]  ; copy the position
+  mov ax, [si + BULLET_SIZE + BULLET_POSITION_OFFSET]  ; copy the position
   mov [si + BULLET_POSITION_OFFSET], ax
-  add si, BULLET_NEXT_OFFSET             ; set SI to the next bullet
+  add si, BULLET_SIZE             ; set SI to the next bullet
   jmp .loop
 .done:
-  sub word [bullet_list_end], BULLET_NEXT_OFFSET ; adjust end of list
+  sub word [bullet_list_end], BULLET_SIZE ; adjust end of list
   pop si
   pop ax
   ret
