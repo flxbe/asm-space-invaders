@@ -31,29 +31,29 @@ init_game:
   ret
 
 
-; ******************************************************
-;  * check whether the game is finished
-;  *****************************************************
-; AL 0: continue
+; ***************************************************************
+;  * update to game_state to check whether the game is finished
+;  **************************************************************
+; AL 0: still playing
 ;    1: invaders win
 ;    2: player wins
-check_game_state:
+update_game_state:
   ; check whether the player is destroyed
   cmp word [player_pos], INVALID_STATE
-  je .invaders
+  je .invaders_win
 
   ; check whether the player wins
   cmp byte [num_invaders_alive], 0
-  je .player
+  je .player_win
 
-  ; continue
-  mov al, 0
+  ; still playing
+  mov byte [game_state], GAME_STATE_PLAYING
   jmp .done
-.invaders:
-  mov al, 1
+.invaders_win:
+  mov byte [game_state], GAME_STATE_INVADERS_WIN
   jmp .done
-.player:
-  mov al, 2
+.player_win:
+  mov byte [game_state], GAME_STATE_PLAYER_WIN
 .done:
   ret
 
