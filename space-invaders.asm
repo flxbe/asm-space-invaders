@@ -161,17 +161,8 @@ game:
   call render_bullets
   call render_player
   call render_invaders
+  call render_controlls
 
-  ; render controlls
-  mov dx, 0x0000
-  mov si, left_string
-  call print_string
-  inc dh
-  mov si, right_string
-  call print_string
-  inc dh
-  mov si, shoot_string
-  call print_string
 .continue:
   mov cx, 0x0000  ; 0.05 seconds (cx:dx)
   mov dx, 0x1388  ; 0x00001388 = 5000

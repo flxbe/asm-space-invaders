@@ -86,3 +86,19 @@ print_string:
 .done:
   pop ax
   ret
+
+render_controlls:
+  push si
+  push dx
+  mov dx, 0x0000
+  mov si, left_string
+  call print_string
+  inc dh
+  mov si, right_string
+  call print_string
+  inc dh
+  mov si, shoot_string
+  call print_string
+  pop dx
+  pop si
+  ret
