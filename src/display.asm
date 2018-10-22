@@ -10,6 +10,7 @@ clear_screen:
 ; AX: title
 ; BX: options
 print_window:
+  push si
   push dx
   push bx
   push ax
@@ -45,6 +46,7 @@ print_window:
   call print_string
   ; return
   pop dx
+  pop si
   ret
 
 ; DX position of char
