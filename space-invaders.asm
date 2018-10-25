@@ -20,14 +20,10 @@
 %define ICON_EXPLOSION_BULLET '#'
 %define ICON_WALL '#'
 
-; GAME WINNERS
-%define PLAYER_WIN 0
-%define INVADERS_WIN 1
-
-; PROGRAM STATES
-%define PROGRAM_START_STATE 0
-%define PROGRAM_GAME_STATE 1
-%define PROGRAM_END_STATE 2
+; GAME STATES
+%define GAME_STATE_PLAYING 0
+%define GAME_STATE_PLAYER_WIN 1
+%define GAME_STATE_INVADERS_WIN 2
 
 ; PLAY KEYS
 %define START_KEY ' '
@@ -89,20 +85,11 @@ jmp main
 
 ; main loop
 main:
-  mov ah, [program_state]
-  cmp ah, PROGRAM_GAME_STATE
-  je .game
-  cmp ah, PROGRAM_END_STATE
-  je .end
-.intro:
   call intro
-  jmp main
 .game:
   call game
-  jmp main
-.end:
   call end
-  jmp main
+  jmp .game
 
 
 ; intro screen
@@ -116,10 +103,9 @@ intro:
   call get_key
   mov al, [key_pressed]
   cmp al, START_KEY
-  je .game
+  je .done
   jmp .wait
-.game:
-  mov byte [program_state], PROGRAM_GAME_STATE
+.done:
   ret
 
 
@@ -128,28 +114,9 @@ game:
   call init_game
 .loop:
 
-  ; check the current program state
-  cmp byte [program_state], PROGRAM_GAME_STATE
-  jne .done
-
   ; get key if available
   call check_key
 
-  ; check the game state
-  cmp word [player_pos], INVALID_STATE
-  je .invaders
-  ; check whether the player wins
-  cmp byte [num_invaders_alive], 0
-  je .player
-  ; execute a game step
-  jmp .execute
-.invaders:
-  mov byte [winner], INVADERS_WIN
-  jmp .done
-.player:
-  mov byte [winner], PLAYER_WIN
-  jmp .done
-.execute:
   ; move
   call move_bullets
   call move_player
@@ -163,35 +130,37 @@ game:
   call render_invaders
   call render_controlls
 
-.continue:
+  ; update to game state
+  call update_game_state
+  cmp byte [game_state], GAME_STATE_PLAYING
+  jne .done
+
   mov cx, 0x0000  ; 0.05 seconds (cx:dx)
   mov dx, 0x1388  ; 0x00001388 = 5000
   call sleep
   jmp	.loop
 .done:
-  mov byte [program_state], PROGRAM_END_STATE
   ret
 
 
 ; end screen
 end:
-  cmp byte [winner], PLAYER_WIN
-  je .player
+  cmp byte [game_state], GAME_STATE_PLAYER_WIN
+  je .player_win
   mov ax, end_string_l
-  jmp .continue
-.player:
+  jmp .print_game_result
+.player_win:
   mov ax, end_string_w
-.continue:
+.print_game_result:
   mov bx, end_string_o
   call print_window
 .wait:
   call get_key
   mov al, [key_pressed]
   cmp al, RETRY_KEY
-  je .game
+  je .done
   jmp .wait
-.game:
-  mov byte [program_state], PROGRAM_GAME_STATE
+.done:
   ret
 
 
@@ -214,12 +183,6 @@ right_string db "D = move right", 0
 shoot_string db "SPACE = shoot", 0
 
 
-; program state
-; 0: start screen
-; 1: game screen
-; 2: end screen
-program_state db 0
-
 segment .bss
   ; display properties
   display_offset resb 1
@@ -227,10 +190,11 @@ segment .bss
   ; keyboard
   key_pressed resb 1
 
-  ; game
-  ; 0: player wins
-  ; 1: invaders win
-  winner resb 1
+  ; game state
+  ; 0: still playing
+  ; 1: player wins
+  ; 2: invaders win
+  game_state resb 1
 
   ; player
   player_pos resw 1
