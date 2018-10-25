@@ -128,17 +128,7 @@ game:
   call render_bullets
   call render_player
   call render_invaders
-
-  ; render controlls
-  mov dx, 0x0000
-  mov si, left_string
-  call print_string
-  inc dh
-  mov si, right_string
-  call print_string
-  inc dh
-  mov si, shoot_string
-  call print_string
+  call render_controlls
 
   ; update to game state
   call update_game_state

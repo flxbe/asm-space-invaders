@@ -10,6 +10,7 @@ clear_screen:
 ; AX: title
 ; BX: options
 print_window:
+  push si
   push dx
   push bx
   push ax
@@ -45,6 +46,7 @@ print_window:
   call print_string
   ; return
   pop dx
+  pop si
   ret
 
 ; DX position of char
@@ -85,4 +87,20 @@ print_string:
   jmp .loop
 .done:
   pop ax
+  ret
+
+render_controlls:
+  push si
+  push dx
+  mov dx, 0x0000
+  mov si, left_string
+  call print_string
+  inc dh
+  mov si, right_string
+  call print_string
+  inc dh
+  mov si, shoot_string
+  call print_string
+  pop dx
+  pop si
   ret
