@@ -25,11 +25,6 @@
 %define GAME_STATE_PLAYER_WIN 1
 %define GAME_STATE_INVADERS_WIN 2
 
-; PROGRAM STATES
-%define PROGRAM_START_STATE 0
-%define PROGRAM_GAME_STATE 1
-%define PROGRAM_END_STATE 2
-
 ; PLAY KEYS
 %define START_KEY ' '
 %define RETRY_KEY 'r'
@@ -90,20 +85,11 @@ jmp main
 
 ; main loop
 main:
-  mov ah, [program_state]
-  cmp ah, PROGRAM_GAME_STATE
-  je .game
-  cmp ah, PROGRAM_END_STATE
-  je .end
-.intro:
   call intro
-  jmp main
 .game:
   call game
-  jmp main
-.end:
   call end
-  jmp main
+  jmp .game
 
 
 ; intro screen
@@ -117,10 +103,9 @@ intro:
   call get_key
   mov al, [key_pressed]
   cmp al, START_KEY
-  je .game
+  je .done
   jmp .wait
-.game:
-  mov byte [program_state], PROGRAM_GAME_STATE
+.done:
   ret
 
 
@@ -165,7 +150,6 @@ game:
   call sleep
   jmp	.loop
 .done:
-  mov byte [program_state], PROGRAM_END_STATE
   ret
 
 
@@ -184,10 +168,9 @@ end:
   call get_key
   mov al, [key_pressed]
   cmp al, RETRY_KEY
-  je .game
+  je .done
   jmp .wait
-.game:
-  mov byte [program_state], PROGRAM_GAME_STATE
+.done:
   ret
 
 
@@ -209,12 +192,6 @@ left_string db "A = move left", 0
 right_string db "D = move right", 0
 shoot_string db "SPACE = shoot", 0
 
-
-; program state
-; 0: start screen
-; 1: game screen
-; 2: end screen
-program_state db 0
 
 segment .bss
   ; display properties
