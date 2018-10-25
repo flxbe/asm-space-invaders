@@ -104,3 +104,40 @@ render_controlls:
   pop dx
   pop si
   ret
+
+print_select_difficulty_level:
+  push si
+  push dx
+  mov dl, [display_offset]
+  add dl, 3
+  ; top
+  mov dh, 0x05
+  mov si, window_bar
+  call print_string
+  inc dh
+  mov si, window_space
+  call print_string
+  inc dh
+  mov si, select_difficulty_string
+  call print_string
+  inc dh
+  mov si, window_space
+  call print_string
+  inc dh,
+  mov si, easy_level_string
+  call print_string
+  inc dh
+  mov si, medium_level_string
+  call print_string
+  inc dh
+  mov si, hard_level_string
+  call print_string
+  inc dh
+  mov si, window_space
+  call print_string
+  inc dh
+  mov si, window_bar
+  call print_string
+  pop dx
+  pop si
+  ret
