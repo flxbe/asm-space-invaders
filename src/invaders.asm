@@ -41,7 +41,8 @@ move_invaders:
 
 .shoot:
   ; shoot, if necessary
-  cmp byte [invaders_shoot_cycle], INVADERS_SHOOT_CYCLES
+  mov al, [invaders_shoot_cycle]
+  cmp byte al, [invaders_shoot_cycles]
   jne .continue
   call create_invader_bullet
 .continue:
@@ -50,7 +51,8 @@ move_invaders:
   jnz .loop
 
   ; update the shoot cycle
-  cmp byte [invaders_shoot_cycle], INVADERS_SHOOT_CYCLES
+  mov al, [invaders_shoot_cycle]
+  cmp byte al, [invaders_shoot_cycles]
   jne .inc_shoot_cycle
   mov byte [invaders_shoot_cycle], 0
   jmp .update_move_direction

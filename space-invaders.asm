@@ -7,7 +7,6 @@
 ; GAME PARAMETERES
 %define NUM_INVADERS 12
 %define INVADERS_MOVE_CYCLES 40
-%define INVADERS_SHOOT_CYCLES 4
 %define BULLETS_MOVE_CYCLE 28
 
 ; SPECIAL CONSTANT
@@ -19,6 +18,16 @@
 %define ICON_BULLET '|'
 %define ICON_EXPLOSION_BULLET '#'
 %define ICON_WALL '#'
+
+; GAME DIFFICULTY LEVEL KEYS
+%define GAME_EASY_LEVEL_KEY '1'
+%define GAME_MEDIUM_LEVEL_KEY '2'
+%define GAME_HARD_LEVEL_KEY '3'
+
+; INVADERS DIFFICULTY LEVEL (invaders shoot cycles)
+%define INVADERS_EASY_LEVEL 6
+%define INVADERS_MEDIUM_LEVEL 4
+%define INVADERS_HARD_LEVEL 2
 
 ; GAME STATES
 %define GAME_STATE_PLAYING 0
@@ -87,6 +96,7 @@ jmp main
 main:
   call intro
 .game:
+  call select_difficulty_level
   call game
   call end
   jmp .game
@@ -105,6 +115,31 @@ intro:
   cmp al, START_KEY
   je .done
   jmp .wait
+.done:
+  ret
+
+; select difficulty level
+select_difficulty_level:
+  call clear_screen
+  call print_select_difficulty_level
+.wait:
+  call get_key
+  mov al, [key_pressed]
+  cmp al, GAME_EASY_LEVEL_KEY
+  je .easy_level
+  cmp al, GAME_MEDIUM_LEVEL_KEY
+  je .medium_level
+  cmp al, GAME_HARD_LEVEL_KEY
+  je .hard_level
+  jmp .wait
+.easy_level:
+  mov byte [invaders_shoot_cycles], INVADERS_EASY_LEVEL
+  jmp .done
+.medium_level:
+  mov byte [invaders_shoot_cycles], INVADERS_MEDIUM_LEVEL
+  jmp .done
+.hard_level:
+  mov byte [invaders_shoot_cycles], INVADERS_HARD_LEVEL
 .done:
   ret
 
@@ -172,6 +207,12 @@ window_space db "#                    #", 0
 intro_string_t db "#   SPACE INVADERS   #", 0
 intro_string_o db "#   SPACE to start   #", 0
 
+; select difficulty level
+select_difficulty_string db "#  Select difficulty #", 0
+easy_level_string        db "#  1     Easy        #", 0
+medium_level_string      db "#  2    Medium       #", 0
+hard_level_string        db "#  3     Hard        #", 0
+
 ; end
 end_string_w db "#    PLAYER  wins    #", 0
 end_string_l db "#    INVADERS win    #", 0
@@ -204,6 +245,7 @@ segment .bss
   invaders_move_direction resb 1
   invaders_move_cycle resb 1
   invaders_shoot_cycle resb 1
+  invaders_shoot_cycles resb 1
   ; bullets:  0x STATUS PY PX
   ; STATUS == 0: end of list
   ; STATUS == #: explosion
