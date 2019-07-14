@@ -7,6 +7,8 @@ render_arena:
   push dx
 
   mov al, ICON_WALL
+  mov bl, FG_DARK_GRAY
+  add bl, BG_BLACK
   mov dh, 0
   mov cl, GAME_HEIGHT
 .loop:

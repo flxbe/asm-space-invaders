@@ -45,6 +45,8 @@ render_player:
   cmp dx, INVALID_STATE
   je .done
   mov al, ICON_PLAYER
+  mov bl, FG_CYAN
+  add bl, BG_BLACK
   call print_object
 .done:
   pop dx
