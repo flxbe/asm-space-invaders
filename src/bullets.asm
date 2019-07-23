@@ -91,8 +91,14 @@ _render_bullet:
   mov al, [si]      ; load status
   mov dx, [si + BULLET_POSITION_OFFSET]  ; load position
   cmp al, ICON_EXPLOSION_BULLET
-  je .print
+  jne .set_bullet
+  mov bl, FG_GREEN
+  add bl, BG_BLACK
+  jmp .print
+.set_bullet:
   mov al, ICON_BULLET  ; set bullet
+  mov bl, FG_RED
+  add bl, BG_BLACK
 .print:
   call print_object
   pop dx

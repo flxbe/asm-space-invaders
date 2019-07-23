@@ -65,14 +65,48 @@
 %define INVADER_POSITION_SIZE 2
 %define INVADER_SIZE INVADER_POSITION_OFFSET + INVADER_POSITION_SIZE
 
+; COLOR
+%define FG_BLACK          00000000b
+%define BG_BLACK          00000000b
+%define FG_BLUE           00000001b
+%define BG_BLUE           00010000b
+%define FG_GREEN          00000010b
+%define BG_GREEN          00100000b
+%define FG_CYAN           00000011b
+%define BG_CYAN           00110000b
+%define FG_RED            00000100b
+%define BG_RED            01000000b
+%define FG_MAGENTA        00000101b
+%define BG_MAGENTA        01010000b
+%define FG_YELLOW         00000110b
+%define BG_YELLOW         01100000b
+%define FG_LIGHT_GRAY     00000111b
+%define BG_LIGHT_GRAY     01110000b
+%define FG_DARK_GRAY      00001000b
+%define BG_DARK_GRAY      10000000b
+%define FG_BRIGHT_BLUE    00001001b
+%define BG_BRIGHT_BLUE    10010000b
+%define FG_BRIGHT_GREEN   00001010b
+%define BG_BRIGHT_GRENN   10100000b
+%define FG_BRIGHT_CYAN    00001011b
+%define BG_BRIGHT_CYAN    10110000b
+%define FG_BRIGHT_RED     00001100b
+%define BG_BRIGHT_RED     11000000b
+%define FG_BRIGHT_MAGENTA 00001101b
+%define BG_BRIGHT_MAGENTA 11010000b
+%define FG_BRIGHT_YELLOW  00001110b
+%define BG_BRIGHT_YELLOW  11100000b
+%define FG_WHITE          00001111b
+%define BG_WHITE          11110000b
+
 ; clear the cursor blinking
 mov	ah, 0x01
 mov	cx, 0x2000
 int 	0x10
 
 ; calculate game screen position
-mov	ah, 0x0F
-int	0x10 ; load the number of columns
+mov ah, 0x0F
+int 0x10 ; load the number of columns
 sub byte ah, 1
 sub ah, GAME_WIDTH
 sar ah, 1

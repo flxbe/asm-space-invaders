@@ -14,6 +14,8 @@ print_window:
   push dx
   push bx
   push ax
+  mov bl, FG_LIGHT_GRAY
+  add bl, BG_BLACK
   mov dl, [display_offset]
   add dl, 3
   ; top
@@ -51,6 +53,7 @@ print_window:
 
 ; DX position of char
 ; AL character
+; BL attribute
 print_object:
   add byte dl, [display_offset]
   call move_cursor
@@ -65,14 +68,44 @@ move_cursor:
   int 0x10
   ret
 
-; AL character
-print_char:
-  mov ah, 0x0E	; tell BIOS that we need to print one character on screen
-  mov bh, 0x00	; page number
-  mov bl, 0x07	; text attribute 0x07 is lightgrey font on black background
+get_cursor_position:
+  push cx
+  mov ah, 0x03 ; read cursor position
+  xor bh, bh
   int 0x10
+  pop cx
   ret
 
+; DX cursor position
+move_cursor_next:
+  push dx
+  call get_cursor_position
+  inc dl
+  cmp dl, 0x50 ; right edge of screen
+  jle .done
+  inc dh       ; move cursor to new line
+  mov dl, 0x00
+  cmp dh, 0x19 ; end of screen
+  jle .done
+  call clear_screen
+.done:
+  call move_cursor
+  pop dx
+  ret
+
+; AL character
+; BL attribute
+print_char:
+  push cx
+  mov ah, 0x09 ; indicating the write Char/Attr pair function
+  mov bh, 0x00 ; page number
+  mov cx, 0x01 ; repeat count
+  int 0x10
+  call move_cursor_next
+  pop cx
+  ret
+
+; BL attribute
 ; DX position
 ; SI string pointer
 print_string:
@@ -92,6 +125,8 @@ print_string:
 render_controlls:
   push si
   push dx
+  mov bl, FG_LIGHT_GRAY
+  add bl, BG_BLACK
   mov dx, 0x0000
   mov si, left_string
   call print_string
@@ -108,6 +143,8 @@ render_controlls:
 print_select_difficulty_level:
   push si
   push dx
+  mov bl, FG_LIGHT_GRAY
+  add bl, BG_BLACK
   mov dl, [display_offset]
   add dl, 3
   ; top

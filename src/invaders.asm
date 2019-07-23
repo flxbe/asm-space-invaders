@@ -84,13 +84,24 @@ render_invaders:
   push ax
   push cx
 
-  mov al, ICON_INVADER
   mov si, invaders
   mov cl, NUM_INVADERS
 .loop:
   mov dx, [si]
   cmp dx, INVALID_STATE
   je .continue
+  mov ax, cx
+  mov bl, 2
+  div bl
+  cmp ah, 0
+  je .set_magenta
+  mov bl, FG_BRIGHT_YELLOW
+  jmp .print
+.set_magenta:
+  mov bl, FG_MAGENTA
+.print:
+  add bl, BG_BLACK
+  mov al, ICON_INVADER
   call print_object
 .continue:
   add si, INVADER_SIZE
